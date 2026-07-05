@@ -1,6 +1,8 @@
 package com.nitesh.smartcart.service;
 
+import com.nitesh.smartcart.entity.Cart;
 import com.nitesh.smartcart.entity.User;
+import com.nitesh.smartcart.repository.CartRepository;
 import com.nitesh.smartcart.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,9 +12,12 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final CartRepository cartRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       CartRepository cartRepository) {
         this.userRepository = userRepository;
+        this.cartRepository = cartRepository;
     }
 
     // Get All Users
@@ -32,7 +37,15 @@ public class UserService {
             return null;
         }
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+
+        // Automatically create a cart for every new user
+        Cart cart = new Cart();
+        cart.setUser(savedUser);
+
+        cartRepository.save(cart);
+
+        return savedUser;
     }
 
     // Update User

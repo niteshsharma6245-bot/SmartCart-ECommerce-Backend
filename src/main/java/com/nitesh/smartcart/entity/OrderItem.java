@@ -1,20 +1,20 @@
 package com.nitesh.smartcart.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
-@Table(name = "cart_items")
-public class CartItem {
+@Table(name = "order_items")
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "cart_id", nullable = false)
-    private Cart cart;
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -23,14 +23,19 @@ public class CartItem {
     @Column(nullable = false)
     private Integer quantity;
 
-    public CartItem() {
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
+
+    public OrderItem() {
     }
 
-    public CartItem(Integer id, Cart cart, Product product, Integer quantity) {
+    public OrderItem(Integer id, Order order, Product product,
+                     Integer quantity, BigDecimal price) {
         this.id = id;
-        this.cart = cart;
+        this.order = order;
         this.product = product;
         this.quantity = quantity;
+        this.price = price;
     }
 
     public Integer getId() {
@@ -41,12 +46,12 @@ public class CartItem {
         this.id = id;
     }
 
-    public Cart getCart() {
-        return cart;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setCart(Cart cart) {
-        this.cart = cart;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public Product getProduct() {
@@ -63,5 +68,13 @@ public class CartItem {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
     }
 }

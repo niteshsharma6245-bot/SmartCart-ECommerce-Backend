@@ -1,15 +1,15 @@
 package com.nitesh.smartcart.repository;
 
 import com.nitesh.smartcart.entity.Order;
-import com.nitesh.smartcart.entity.User;
+import com.nitesh.smartcart.entity.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Integer> {
+public interface OrderItemRepository extends JpaRepository<OrderItem, Integer> {
 
-    List<Order> findByUser(User user);
+    List<OrderItem> findByOrder(Order order);
 
 }
