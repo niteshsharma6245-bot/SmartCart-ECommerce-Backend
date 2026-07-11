@@ -1,7 +1,10 @@
 package com.nitesh.smartcart.controller;
 
-import com.nitesh.smartcart.entity.User;
+import com.nitesh.smartcart.dto.ApiResponse;
+import com.nitesh.smartcart.dto.UserRequest;
+import com.nitesh.smartcart.dto.UserResponse;
 import com.nitesh.smartcart.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,39 +21,35 @@ public class UserController {
 
     // Get All Users
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 
     // Get User By ID
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Integer id) {
+    public UserResponse getUserById(@PathVariable Integer id) {
         return userService.getUserById(id);
     }
 
     // Add User
     @PostMapping
-    public User addUser(@RequestBody User user) {
-        return userService.addUser(user);
+    public UserResponse addUser(@Valid @RequestBody UserRequest request) {
+        return userService.addUser(request);
     }
 
     // Update User
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Integer id,
-                           @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public UserResponse updateUser(@PathVariable Integer id,
+                                   @Valid @RequestBody UserRequest request) {
+        return userService.updateUser(id, request);
     }
 
     // Delete User
     @DeleteMapping("/{id}")
-    public String deleteUser(@PathVariable Integer id) {
+    public ApiResponse deleteUser(@PathVariable Integer id) {
 
-        boolean deleted = userService.deleteUser(id);
+        userService.deleteUser(id);
 
-        if (deleted) {
-            return "User deleted successfully.";
-        }
-
-        return "User not found.";
+        return new ApiResponse("User deleted successfully.");
     }
 }

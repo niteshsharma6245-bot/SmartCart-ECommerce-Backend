@@ -1,7 +1,11 @@
 package com.nitesh.smartcart.controller;
 
-import com.nitesh.smartcart.entity.Product;
+import com.nitesh.smartcart.dto.ApiResponse;
+import com.nitesh.smartcart.dto.ProductRequest;
+import com.nitesh.smartcart.dto.ProductResponse;
 import com.nitesh.smartcart.service.ProductService;
+import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,58 +21,62 @@ public class ProductController {
     }
 
     // Get All Products
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
-    public List<Product> getAllProducts() {
+    public List<ProductResponse> getAllProducts() {
         return productService.getAllProducts();
     }
 
     // Get Product By ID
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Integer id) {
+    public ProductResponse getProductById(@PathVariable Integer id) {
         return productService.getProductById(id);
     }
 
     // Add Product
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public Product addProduct(@RequestBody Product product) {
-        return productService.addProduct(product);
+    public ProductResponse addProduct(@Valid @RequestBody ProductRequest request) {
+        return productService.addProduct(request);
     }
 
     // Update Product
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable Integer id,
-                                 @RequestBody Product product) {
-        return productService.updateProduct(id, product);
+    public ProductResponse updateProduct(@PathVariable Integer id,
+                                         @Valid @RequestBody ProductRequest request) {
+        return productService.updateProduct(id, request);
     }
 
     // Soft Delete Product
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable Integer id) {
+    public ApiResponse deleteProduct(@PathVariable Integer id) {
 
-        boolean deleted = productService.deleteProduct(id);
+        productService.deleteProduct(id);
 
-        if (deleted) {
-            return "Product deleted successfully.";
-        }
-
-        return "Product not found.";
+        return new ApiResponse("Product deleted successfully.");
     }
 
     // Get Products By Category
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/category/{category}")
-    public List<Product> getProductsByCategory(@PathVariable String category) {
+    public List<ProductResponse> getProductsByCategory(@PathVariable String category) {
         return productService.getProductsByCategory(category);
     }
 
     // Get Products By Brand
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/brand/{brand}")
-    public List<Product> getProductsByBrand(@PathVariable String brand) {
+    public List<ProductResponse> getProductsByBrand(@PathVariable String brand) {
         return productService.getProductsByBrand(brand);
     }
 
     // Search Products
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/search/{keyword}")
-    public List<Product> searchProducts(@PathVariable String keyword) {
+    public List<ProductResponse> searchProducts(@PathVariable String keyword) {
         return productService.searchProducts(keyword);
     }
 }

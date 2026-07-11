@@ -1,6 +1,7 @@
 package com.nitesh.smartcart.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,27 +14,41 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Product name is required.")
+    @Size(max = 100, message = "Product name cannot exceed 100 characters.")
     @Column(nullable = false, length = 100)
     private String name;
 
+    @NotBlank(message = "Description is required.")
+    @Size(max = 1000, message = "Description cannot exceed 1000 characters.")
     @Column(nullable = false, length = 1000)
     private String description;
 
+    @NotNull(message = "Price is required.")
+    @DecimalMin(value = "0.01", message = "Price must be greater than 0.")
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
+    @NotBlank(message = "Category is required.")
+    @Size(max = 50, message = "Category cannot exceed 50 characters.")
     @Column(nullable = false, length = 50)
     private String category;
 
+    @NotBlank(message = "Brand is required.")
+    @Size(max = 50, message = "Brand cannot exceed 50 characters.")
     @Column(nullable = false, length = 50)
     private String brand;
 
+    @NotNull(message = "Stock is required.")
+    @PositiveOrZero(message = "Stock cannot be negative.")
     @Column(nullable = false)
     private Integer stock;
 
+    @NotNull(message = "Active status is required.")
     @Column(nullable = false)
     private Boolean active = true;
 
+    @Size(max = 500, message = "Image URL cannot exceed 500 characters.")
     @Column(length = 500)
     private String imageUrl;
 

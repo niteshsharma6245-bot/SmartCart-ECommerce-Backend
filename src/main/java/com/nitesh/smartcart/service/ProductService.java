@@ -1,13 +1,18 @@
 package com.nitesh.smartcart.service;
 
+import com.nitesh.smartcart.dto.ProductRequest;
+import com.nitesh.smartcart.dto.ProductResponse;
 import com.nitesh.smartcart.entity.Product;
+import com.nitesh.smartcart.exception.ProductNotFoundException;
 import com.nitesh.smartcart.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class ProductService {
+public class ProductService
+{
 
     private final ProductRepository productRepository;
 
@@ -15,50 +20,118 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    // Get all active products
-    public List<Product> getAllProducts() {
-        return productRepository.findByActiveTrue();
+    // =========================
+    // Entity -> DTO
+    // =========================
+
+    private ProductResponse mapToResponse(Product product) {
+
+        return new ProductResponse(
+                product.getId(),
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getCategory(),
+                product.getBrand(),
+                product.getStock(),
+                product.getActive(),
+                product.getImageUrl()
+        );
     }
 
-    // Get product by ID
-    public Product getProductById(Integer id) {
-        return productRepository.findById(id).orElse(null);
+    // =========================
+    // DTO -> Entity
+    // =========================
+
+    private Product mapToEntity(ProductRequest request) {
+
+        Product product = new Product();
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setCategory(request.getCategory());
+        product.setBrand(request.getBrand());
+        product.setStock(request.getStock());
+        product.setActive(request.getActive());
+        product.setImageUrl(request.getImageUrl());
+
+        return product;
     }
 
+    // =========================
+    // Get All Products
+    // =========================
+
+    public List<ProductResponse> getAllProducts() {
+
+        return productRepository.findByActiveTrue()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // =========================
+    // Get Product By Id
+    // =========================
+
+    public ProductResponse getProductById(Integer id) {
+
+        Product product = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ProductNotFoundException(
+                                "Product not found with id : " + id));
+
+        return mapToResponse(product);
+    }
+
+    // =========================
     // Add Product
-    public Product addProduct(Product product) {
-        return productRepository.save(product);
-    }
+    // =========================
 
+    public ProductResponse addProduct(ProductRequest request) {
+
+        Product product = mapToEntity(request);
+
+        Product savedProduct = productRepository.save(product);
+
+        return mapToResponse(savedProduct);
+    }
+    // =========================
     // Update Product
-    public Product updateProduct(Integer id, Product updatedProduct) {
+    // =========================
 
-        Product existingProduct = productRepository.findById(id).orElse(null);
+    public ProductResponse updateProduct(Integer id, ProductRequest request) {
 
-        if (existingProduct == null) {
-            return null;
-        }
+        Product existingProduct = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ProductNotFoundException(
+                                "Product not found with id : " + id));
 
-        existingProduct.setName(updatedProduct.getName());
-        existingProduct.setDescription(updatedProduct.getDescription());
-        existingProduct.setPrice(updatedProduct.getPrice());
-        existingProduct.setCategory(updatedProduct.getCategory());
-        existingProduct.setBrand(updatedProduct.getBrand());
-        existingProduct.setStock(updatedProduct.getStock());
-        existingProduct.setActive(updatedProduct.getActive());
-        existingProduct.setImageUrl(updatedProduct.getImageUrl());
+        existingProduct.setName(request.getName());
+        existingProduct.setDescription(request.getDescription());
+        existingProduct.setPrice(request.getPrice());
+        existingProduct.setCategory(request.getCategory());
+        existingProduct.setBrand(request.getBrand());
+        existingProduct.setStock(request.getStock());
+        existingProduct.setActive(request.getActive());
+        existingProduct.setImageUrl(request.getImageUrl());
 
-        return productRepository.save(existingProduct);
+        Product updatedProduct = productRepository.save(existingProduct);
+
+        return mapToResponse(updatedProduct);
     }
 
+    // =========================
     // Soft Delete Product
+    // =========================
+
     public boolean deleteProduct(Integer id) {
 
-        Product product = productRepository.findById(id).orElse(null);
-
-        if (product == null) {
-            return false;
-        }
+        Product product = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ProductNotFoundException(
+                                "Product not found with id : " + id));
 
         product.setActive(false);
         productRepository.save(product);
@@ -66,18 +139,40 @@ public class ProductService {
         return true;
     }
 
-    // Search by Category
-    public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategoryIgnoreCaseAndActiveTrue(category);
+    // =========================
+    // Get Products By Category
+    // =========================
+
+    public List<ProductResponse> getProductsByCategory(String category) {
+
+        return productRepository.findByCategoryIgnoreCaseAndActiveTrue(category)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
-    // Search by Brand
-    public List<Product> getProductsByBrand(String brand) {
-        return productRepository.findByBrandIgnoreCaseAndActiveTrue(brand);
+    // =========================
+    // Get Products By Brand
+    // =========================
+
+    public List<ProductResponse> getProductsByBrand(String brand) {
+
+        return productRepository.findByBrandIgnoreCaseAndActiveTrue(brand)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
-    // Search by Name
-    public List<Product> searchProducts(String keyword) {
-        return productRepository.findByNameContainingIgnoreCaseAndActiveTrue(keyword);
+    // =========================
+    // Search Products
+    // =========================
+
+    public List<ProductResponse> searchProducts(String keyword) {
+
+        return productRepository
+                .findByNameContainingIgnoreCaseAndActiveTrue(keyword)
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 }

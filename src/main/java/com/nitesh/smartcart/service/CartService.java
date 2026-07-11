@@ -1,6 +1,12 @@
 package com.nitesh.smartcart.service;
 
-import com.nitesh.smartcart.entity.*;
+import com.nitesh.smartcart.entity.Cart;
+import com.nitesh.smartcart.entity.CartItem;
+import com.nitesh.smartcart.entity.Product;
+import com.nitesh.smartcart.entity.User;
+import com.nitesh.smartcart.exception.CartNotFoundException;
+import com.nitesh.smartcart.exception.ProductNotFoundException;
+import com.nitesh.smartcart.exception.UserNotFoundException;
 import com.nitesh.smartcart.repository.CartItemRepository;
 import com.nitesh.smartcart.repository.CartRepository;
 import com.nitesh.smartcart.repository.ProductRepository;
@@ -31,23 +37,21 @@ public class CartService {
     // Get Cart By User Id
     public Cart getCartByUser(Integer userId) {
 
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found with id : " + userId));
 
-        if (user == null) {
-            return null;
-        }
-
-        return cartRepository.findByUser(user).orElse(null);
+        return cartRepository.findByUser(user)
+                .orElseThrow(() ->
+                        new CartNotFoundException("Cart not found for user id : " + userId));
     }
 
     // Get All Cart Items
     public List<CartItem> getCartItems(Integer cartId) {
 
-        Cart cart = cartRepository.findById(cartId).orElse(null);
-
-        if (cart == null) {
-            return null;
-        }
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() ->
+                        new CartNotFoundException("Cart not found with id : " + cartId));
 
         return cartItemRepository.findByCart(cart);
     }
@@ -57,33 +61,29 @@ public class CartService {
                                      Integer productId,
                                      Integer quantity) {
 
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new UserNotFoundException("User not found with id : " + userId));
 
-        if (user == null) {
-            return null;
-        }
+        Cart cart = cartRepository.findByUser(user)
+                .orElseThrow(() ->
+                        new CartNotFoundException("Cart not found for user id : " + userId));
 
-        Cart cart = cartRepository.findByUser(user).orElse(null);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() ->
+                        new ProductNotFoundException("Product not found with id : " + productId));
 
-        if (cart == null) {
-            return null;
-        }
-
-        Product product = productRepository.findById(productId).orElse(null);
-
-        if (product == null) {
-            return null;
-        }
         if (quantity <= 0) {
-            return null;
+            throw new IllegalArgumentException("Quantity must be greater than zero.");
         }
 
         if (product.getStock() < quantity) {
-            return null;
+            throw new IllegalArgumentException("Insufficient stock available.");
         }
 
-        CartItem existingItem =
-                cartItemRepository.findByCartAndProduct(cart, product).orElse(null);
+        CartItem existingItem = cartItemRepository
+                .findByCartAndProduct(cart, product)
+                .orElse(null);
 
         if (existingItem != null) {
             existingItem.setQuantity(existingItem.getQuantity() + quantity);
@@ -101,18 +101,16 @@ public class CartService {
     // Update Quantity
     public CartItem updateQuantity(Integer cartItemId, Integer quantity) {
 
-        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
-
-        if (cartItem == null) {
-            return null;
-        }
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() ->
+                        new CartNotFoundException("Cart item not found with id : " + cartItemId));
 
         if (quantity <= 0) {
-            return null;
+            throw new IllegalArgumentException("Quantity must be greater than zero.");
         }
 
         if (cartItem.getProduct().getStock() < quantity) {
-            return null;
+            throw new IllegalArgumentException("Insufficient stock available.");
         }
 
         cartItem.setQuantity(quantity);
@@ -123,11 +121,9 @@ public class CartService {
     // Remove Product From Cart
     public boolean removeProduct(Integer cartItemId) {
 
-        CartItem cartItem = cartItemRepository.findById(cartItemId).orElse(null);
-
-        if (cartItem == null) {
-            return false;
-        }
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() ->
+                        new CartNotFoundException("Cart item not found with id : " + cartItemId));
 
         cartItemRepository.delete(cartItem);
 

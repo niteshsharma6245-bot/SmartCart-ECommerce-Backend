@@ -1,5 +1,6 @@
 package com.nitesh.smartcart.controller;
 
+import com.nitesh.smartcart.dto.ApiResponse;
 import com.nitesh.smartcart.entity.Cart;
 import com.nitesh.smartcart.entity.CartItem;
 import com.nitesh.smartcart.service.CartService;
@@ -50,14 +51,10 @@ public class CartController {
 
     // Remove Product
     @DeleteMapping("/item/{cartItemId}")
-    public String removeProduct(@PathVariable Integer cartItemId) {
+    public ApiResponse removeProduct(@PathVariable Integer cartItemId) {
 
-        boolean deleted = cartService.removeProduct(cartItemId);
+        cartService.removeProduct(cartItemId);
 
-        if (deleted) {
-            return "Product removed from cart.";
-        }
-
-        return "Cart item not found.";
+        return new ApiResponse("Product removed from cart.");
     }
 }

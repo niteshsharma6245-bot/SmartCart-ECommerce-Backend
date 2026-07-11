@@ -1,72 +1,38 @@
-package com.nitesh.smartcart.entity;
+package com.nitesh.smartcart.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-@Entity
-@Table(name = "users")
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class UserRequest {
 
     @NotBlank(message = "First name is required")
-    @Size(max = 50, message = "First name cannot exceed 50 characters")
-    @Column(nullable = false, length = 50)
+    @Size(max = 50)
     private String firstName;
 
     @NotBlank(message = "Last name is required")
-    @Size(max = 50, message = "Last name cannot exceed 50 characters")
-    @Column(nullable = false, length = 50)
+    @Size(max = 50)
     private String lastName;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    @Column(nullable = false, unique = true)
+    @Email(message = "Invalid email")
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
-    @Column(nullable = false)
+    @Size(min = 6)
     private String password;
 
-    @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be exactly 10 digits")
-    @Column(nullable = false, length = 15)
+    @NotBlank(message = "Phone is required")
+    @Pattern(regexp = "^[0-9]{10}$")
     private String phone;
 
-    @Column(nullable = false, length = 20)
+    @NotBlank(message = "Role is required")
     private String role;
 
-    @Column(nullable = false)
     private Boolean enabled = true;
 
-    public User() {
-    }
-
-    public User(Integer id, String firstName, String lastName,
-                String email, String password,
-                String phone, String role, Boolean enabled) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
-        this.role = role;
-        this.enabled = enabled;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+    public UserRequest() {
     }
 
     public String getFirstName() {

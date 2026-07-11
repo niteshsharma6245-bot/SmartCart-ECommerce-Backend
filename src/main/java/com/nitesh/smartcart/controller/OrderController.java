@@ -1,6 +1,6 @@
 package com.nitesh.smartcart.controller;
 
-import com.nitesh.smartcart.entity.Order;
+import com.nitesh.smartcart.dto.OrderResponse;
 import com.nitesh.smartcart.service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,19 +18,19 @@ public class OrderController {
 
     // Place Order
     @PostMapping("/{userId}/place")
-    public Order placeOrder(@PathVariable Integer userId) {
+    public OrderResponse placeOrder(@PathVariable Integer userId) {
         return orderService.placeOrder(userId);
     }
 
     // Get Order By Id
     @GetMapping("/{orderId}")
-    public Order getOrderById(@PathVariable Integer orderId) {
+    public OrderResponse getOrderById(@PathVariable Integer orderId) {
         return orderService.getOrderById(orderId);
     }
 
     // Get All Orders Of User
     @GetMapping("/user/{userId}")
-    public List<Order> getUserOrders(@PathVariable Integer userId) {
+    public List<OrderResponse> getUserOrders(@PathVariable Integer userId) {
         return orderService.getUserOrders(userId);
     }
 }
