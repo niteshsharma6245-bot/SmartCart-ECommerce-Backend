@@ -151,7 +151,14 @@ mvn spring-boot:run
 
 ### Swagger UI
 
-> Add Swagger screenshots here.
+<img width="765" height="515" alt="image" src="https://github.com/user-attachments/assets/615456cd-be68-4371-accd-123b7833766e" />
+<img width="762" height="542" alt="image" src="https://github.com/user-attachments/assets/9e0137ed-87f8-461f-93f8-1a262fcce656" />
+<img width="752" height="617" alt="image" src="https://github.com/user-attachments/assets/b8398804-0839-45c2-9167-1a437532acc6" />
+<img width="768" height="832" alt="image" src="https://github.com/user-attachments/assets/a8cd4279-a5bf-46b0-b113-3a7dcf241e04" />
+
+
+
+
 
 ---
 
